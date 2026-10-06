@@ -5,7 +5,7 @@ from pathlib import Path
 
 from feedback.core import Check, Fail, Report, Result, load, run
 
-ASSIGNMENTS = ("vae", "diffusion")
+ASSIGNMENTS = ("vae", "diffusion", "attention")
 
 
 def checks_for(assignment: str) -> list[Check]:

@@ -23,6 +23,7 @@ pip install -r requirements.txt
 python -m feedback vae assignments/vae/starter.py           # every check reports what is missing
 python -m feedback vae reference/vae.py                     # 9/9 checks passed
 python -m feedback diffusion reference/diffusion.py         # 8/8 checks passed
+python -m feedback attention reference/attention.py         # 9/9 checks passed
 ```
 
 Students' notebooks work too (`python -m feedback vae my_homework.ipynb`). Only imports, constants, functions and classes are loaded, so training cells and plots don't run.
@@ -31,6 +32,7 @@ Students' notebooks work too (`python -m feedback vae my_homework.ipynb`). Only 
 
 - [`assignments/vae/`](assignments/vae/README.md): a conditional VAE. Nine checks cover shapes, the KL and reconstruction terms, the reparameterization trick and its gradient, conditioning on the label, the beta-weighted ELBO and its reduction, sampling from the prior, and a short training run.
 - [`assignments/diffusion/`](assignments/diffusion/README.md): a DDPM on 2D points. Eight checks cover the noise schedule, alpha_bar, the forward process, the denoiser's use of t, the training loss, the reverse step, the sampling loop, and a short training run.
+- [`assignments/attention/`](assignments/attention/README.md): multi-head self-attention. Nine checks cover scaled dot-product attention, masking, causal and padding masks, splitting and merging heads, the full multi-head block, leakage from future tokens, sinusoidal positional encoding, and a short training run on a task that needs attention.
 
 The diffusion checks test each piece in isolation by passing in their own models:
 
@@ -42,13 +44,13 @@ The diffusion checks test each piece in isolation by passing in their own models
 
 `python -m evaluation.run_eval <assignment> --seeds 20` checks every case under 20 random seeds:
 
-| | VAE | Diffusion |
-|---|---|---|
-| Known mistakes injected into a correct solution | 21: 100% detected, 100% named | 29: 100% detected, 100% named |
-| Correct implementations written differently | 6: 0% flagged | 8: 0% flagged |
-| Held-out mistakes, written before the evaluation ran and never used to tune the checks | 8: 75% detected | 8: 75% detected |
+| | VAE | Diffusion | Attention |
+|---|---|---|---|
+| Known mistakes injected into a correct solution | 21: 100% detected, 100% named | 29: 100% detected, 100% named | 24: 100% detected, 100% named |
+| Correct implementations written differently | 6: 0% flagged | 8: 0% flagged | 7: 0% flagged |
+| Held-out mistakes, written before the evaluation ran and never used to tune the checks | 8: 75% detected | 8: 75% detected | 8: 100% detected |
 
-The first row is optimistic because the known mistakes and the checks were written together. The held-out row is the more honest measure, though the same author wrote both. Missed held-out mistakes:
+The first row is optimistic because the known mistakes and the checks were written together. The held-out row is the more honest measure, though the same author wrote both. Attention is deterministic, so any wrong value shows up; its weakness is diagnosis instead: all eight held-out attention mistakes get a generic message (for example, scaling by sqrt(d_model) instead of the per-head dimension is reported only as a mismatch). Missed held-out mistakes:
 
 - **VAE:** an ELBO that decodes `mu` instead of a sample, and an encoder that returns `mu` as `logvar`. Every term still has the right value and scale.
 - **Diffusion:** a reverse step that indexes `alpha_bar[t - 1]`, and a denoiser with a `tanh` output. The first changes the mean by less than the sampling noise of the check. The second still trains, just worse.
@@ -64,7 +66,7 @@ assignments/<name>/                 the assignment and a starter file
 reference/<name>.py                 a reference solution, used only for evaluation
 bugs/<name>.py                      known mistakes, held-out mistakes, correct alternatives
 evaluation/run_eval.py              detection, diagnosis and false-positive measurement
-tests/                              72 tests
+tests/                              106 tests
 ```
 
 ## Adding a mistake
