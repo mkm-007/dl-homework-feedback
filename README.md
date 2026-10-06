@@ -1,5 +1,7 @@
 # Behavioral Code Diagnosis for Deep Learning
 
+[![tests](https://github.com/mkm-007/dl-homework-feedback/actions/workflows/tests.yml/badge.svg)](https://github.com/mkm-007/dl-homework-feedback/actions/workflows/tests.yml)
+
 Checks a student's deep learning code by running it, then explains which concept is wrong. It does not compare against an answer key or show a solution.
 
 Most grading scripts compare outputs and report "wrong". A VAE whose KL term is off by a factor of two still trains and still produces blurry digits, and a diffusion sampler that skips its last step still produces plausible points, so the student never finds out. These checks call the student's functions on controlled inputs, compare the behavior with the mathematics, and recognize common mistakes by their signature:
